@@ -83,18 +83,20 @@ namespace NinetiesTV
         // these like to be lower cased here instead of like Sql
         static List<Show> OnlyInNineties(List<Show> shows)
         {
-            // IEnumerate the list/can also be written as var
+            /*// IEnumerate the list/can also be written as var
             List<Show> OnlyNinety = (
                 // look at the shows
                 from s in shows
-                    // while there look at the start and end, if the fit the params
+                // while there look at the start and end, if the fit the params
                 where s.StartYear >= 1990 && s.EndYear < 2000
                 // select it
                 select s
                 // then return it as a list
                 ).ToList();
             // then return to us the query
-            return OnlyNinety;
+            return OnlyNinety*/
+            return shows.Where(s => s.StartYear >= 1990 && s.EndYear < 2000).ToList();
+
         }
 
         // 8. Return the top three highest rated shows.
@@ -118,7 +120,7 @@ namespace NinetiesTV
         // 11. Return the names of the shows that had fewer than 100 episodes.
         static List<string> FewEpisodes(List<Show> shows)
         {
-            // Ienumerate the list
+           /* // Ienumerate the list
             List<string> episodeCount = (
                 // go to the shows
                 from s in shows
@@ -129,30 +131,32 @@ namespace NinetiesTV
                 // put them in a list
             ).ToList();
             // return that queried list
-            return episodeCount;
+            spisodeCount*/
+            return shows.Where(s => s.EpisodeCount < 100).Select(s => s.Name).ToList();
         }
 
         // 12. Return all shows ordered by the number of years on air.
         //     Assume the number of years between the start and end years is the number of years the show was on.
         static List<Show> ShowsByDuration(List<Show> shows)
         {
-            // changing it up and using var
+            /* changing it up and using var
             var showRun = (
                 // Look at teh collection of shows
                 from s in shows
-                    // take the shows start year and end year, find the difference
+                // take the shows start year and end year, find the difference
                 orderby (s.EndYear - s.StartYear) descending
                 // order it by that diff in descending order 
                 select s
             ).ToList();
             // List it and return to me
-            return showRun;
+            return showRun*/
+            return shows.OrderBy(s => s.EndYear - s.StartYear).ToList();
         }
 
         // 13. Return the names of the comedy shows sorted by IMDB rating.
         static List<string> ComediesByRating(List<Show> shows)
         {
-            // Var instead of List<>
+            /* Var instead of List<>
             var comedy = (
                 from s in shows
                     // Look at shows, then look at the genre collection. 
@@ -163,16 +167,17 @@ namespace NinetiesTV
                 // return the name of the show, instead of the whole show
                 select s.Name
             ).ToList();
-            return comedy;
+            return comedy*/
+            return shows.OrderByDescending(s => s.ImdbRating).Where(s => s.Genres.Contains("Comedy")).Select(s => s.Name).ToList();
         }
 
         // 14. Return the shows with more than one genre ordered by their starting year.
         static List<Show> WithMultipleGenresByStartYear(List<Show> shows)
         {
-            var multiGenre = (
+            /*var multiGenre = (
                 from s in shows
-                    // Count the number of genres in the shows
-                    // If there is more than one hold on to it
+                // Count the number of genres in the shows
+                // If there is more than one hold on to it
                 where s.Genres.Count > 1
                 // put that in a new collection but by start year
                 orderby s.StartYear descending
@@ -180,7 +185,8 @@ namespace NinetiesTV
                 select s
             ).ToList();
             // List it and show me!
-            return multiGenre;
+            return multiGenre*/
+            return shows.OrderBy(s => s.StartYear).Where(s => s.Genres.Count() > 1).ToList();
         }
 
         // 15. Return the show with the most episodes.
@@ -215,7 +221,7 @@ namespace NinetiesTV
         {
             var bestDrama = (
                 from s in shows
-                    // SO we are looking into the shows, but more precisely we want the ones with Drama
+                // SO we are looking into the shows, but more precisely we want the ones with Drama
                 where s.Genres.Contains("Drama")
                 // So once we have only the ones with drama order them in descending order
                 orderby s.ImdbRating descending
@@ -259,19 +265,30 @@ namespace NinetiesTV
         // 21. Return the show with the most words in the name.
         static Show WordieastName(List<Show> shows)
         {
-            throw new NotImplementedException();
+            // Since we need the longest name we will use integers
+            // method function that gathers the condition of counting characters
+            int longTitle = shows.Max(s => s.Name.Count(Char.IsWhiteSpace));
+            // return the first instance of the above 
+            return shows.FirstOrDefault(s => s.Name.Count(Char.IsWhiteSpace) == longTitle);
         }
 
         // 22. Return the names of all shows as a single string seperated by a comma and a space.
         static string AllNamesWithCommas(List<Show> shows)
         {
-            throw new NotImplementedException();
+            // We have to convert the list collection into one lomg string
+            // Select = JS Map()
+            string titles = String.Join(", ", shows.Select(s => s.Name).ToList());
+            return titles;
         }
 
         // 23. Do the same as above, but put the word "and" between the second-to-last and last show name.
         static string AllNamesWithCommasPlsAnd(List<Show> shows)
         {
-            throw new NotImplementedException();
+            // recreate the above, but make it gramatically correct
+            // but we want to "Take()" the last one and push an 'and' between
+            string titles = String.Join(", ", shows.Select(s => s.Name).Take(shows.Count - 1).ToArray());
+            List<string> concat = shows.Select(s => s.Name).Skip(shows.Count - 1).ToList();
+            return titles + ", and " + concat[0];
         }
 
 
