@@ -219,7 +219,7 @@ namespace NinetiesTV
         // 18. Return all dramas except for the highest rated.
         static List<Show> AllButBestDrama(List<Show> shows)
         {
-            var bestDrama = (
+            /*var bestDrama = (
                 from s in shows
                 // SO we are looking into the shows, but more precisely we want the ones with Drama
                 where s.Genres.Contains("Drama")
@@ -230,14 +230,15 @@ namespace NinetiesTV
                 // so now return to us all the best drama but the "bestest"
             ).Skip(1).ToList();
             // Return that collection
-            return bestDrama;
+            return bestDrama;*/
+            return shows.OrderByDescending(s => s.ImdbRating).Where(s => s.Genres.Contains("Drama")).Skip(1).ToList();
         }
 
         // 19. Return the number of crime shows with an IMDB rating greater than 7.0.
         static int GoodCrimeShows(List<Show> shows)
         {
             // this time we want an integer not a collection of shows
-            int crimeShows = (
+            /*int crimeShows = (
                 from s in shows
                 // Like joining tables you we want the intersection of crim shows and ratings of higher than 7
                 where s.Genres.Contains("Crime") && s.ImdbRating > 7
@@ -246,20 +247,15 @@ namespace NinetiesTV
                 // count the objects in that list 
             ).Count();
             // tell us the number
-            return crimeShows;
+            return crimeShows;*/
+            return shows.Where(s => s.Genres.Contains("Crime") && s.ImdbRating > 7).Count();
         }
 
         // 20. Return the first show that ran for more than 10 years 
         //     with an IMDB rating of less than 8.0 ordered alphabetically.
         static Show FirstLongRunningTopRated(List<Show> shows)
         {
-            var longestRunning =
-                // method that iterate through the collection and take the difference in the span of the show
-                // while you iterate over that list find the one with an imdbrating of less than 8.
-                // where those intersect return that collection, but ordered. 
-                shows.Where(s => (s.EndYear - s.StartYear) > 10 && s.ImdbRating < 8).OrderBy(s => s.Name).ToList();
-                // although we have a list we just want the one in first first[0] index spot.
-                return longestRunning[0];
+           return shows.OrderBy(s => s.Name).Where(s => (s.EndYear - s.StartYear) > 10).FirstOrDefault(s => s.ImdbRating < 8);
         }
 
         // 21. Return the show with the most words in the name.
@@ -277,8 +273,7 @@ namespace NinetiesTV
         {
             // We have to convert the list collection into one lomg string
             // Select = JS Map()
-            string titles = String.Join(", ", shows.Select(s => s.Name).ToList());
-            return titles;
+            return String.Join(", ", shows.Select(s => s.Name).ToList());
         }
 
         // 23. Do the same as above, but put the word "and" between the second-to-last and last show name.
@@ -287,7 +282,7 @@ namespace NinetiesTV
             // recreate the above, but make it gramatically correct
             // but we want to "Take()" the last one and push an 'and' between
             string titles = String.Join(", ", shows.Select(s => s.Name).Take(shows.Count - 1).ToArray());
-            List<string> concat = shows.Select(s => s.Name).Skip(shows.Count - 1).ToList();
+            var concat = shows.Select(s => s.Name).Skip(shows.Count - 1).ToList();
             return titles + ", and " + concat[0];
         }
 
