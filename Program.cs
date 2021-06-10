@@ -83,18 +83,18 @@ namespace NinetiesTV
         // these like to be lower cased here instead of like Sql
         static List<Show> OnlyInNineties(List<Show> shows)
         {
-            // IEnumerate the list
+            // IEnumerate the list/can also be written as var
             List<Show> OnlyNinety = (
                 // look at the shows
                 from s in shows
-                // while there look at the start and end, if the fit the params
+                    // while there look at the start and end, if the fit the params
                 where s.StartYear >= 1990 && s.EndYear < 2000
                 // select it
                 select s
                 // then return it as a list
-                ).ToList(); 
-                // then return to us the query
-                return OnlyNinety;
+                ).ToList();
+            // then return to us the query
+            return OnlyNinety;
         }
 
         // 8. Return the top three highest rated shows.
@@ -122,8 +122,8 @@ namespace NinetiesTV
             List<string> episodeCount = (
                 // go to the shows
                 from s in shows
-                // check out specifically the number of epsiodes 
-                where s.EpisodeCount < 100 
+                    // check out specifically the number of epsiodes 
+                where s.EpisodeCount < 100
                 // if they have fewer than 100
                 select s.Name
                 // put them in a list
@@ -136,10 +136,11 @@ namespace NinetiesTV
         //     Assume the number of years between the start and end years is the number of years the show was on.
         static List<Show> ShowsByDuration(List<Show> shows)
         {
-            List<Show> showRun = (
+            // changing it up and using var
+            var showRun = (
                 // Look at teh collection of shows
-                from s in shows 
-                // take the shows start year and end year, find the difference
+                from s in shows
+                    // take the shows start year and end year, find the difference
                 orderby (s.EndYear - s.StartYear) descending
                 // order it by that diff in descending order 
                 select s
@@ -151,10 +152,11 @@ namespace NinetiesTV
         // 13. Return the names of the comedy shows sorted by IMDB rating.
         static List<string> ComediesByRating(List<Show> shows)
         {
-            List<string> comedy = (
+            // Var instead of List<>
+            var comedy = (
                 from s in shows
-                // Look at shows, then look at the genre collection. 
-                // find the show that contains the genre of comedy.
+                    // Look at shows, then look at the genre collection. 
+                    // find the show that contains the genre of comedy.
                 where s.Genres.Contains("Comedy")
                 // order the comedies by rating
                 orderby s.ImdbRating descending
@@ -167,10 +169,10 @@ namespace NinetiesTV
         // 14. Return the shows with more than one genre ordered by their starting year.
         static List<Show> WithMultipleGenresByStartYear(List<Show> shows)
         {
-            List<Show> multiGenre = (
+            var multiGenre = (
                 from s in shows
-                // Count the number of genres in the shows
-                // If there is more than one hold on to it
+                    // Count the number of genres in the shows
+                    // If there is more than one hold on to it
                 where s.Genres.Count > 1
                 // put that in a new collection but by start year
                 orderby s.StartYear descending
@@ -211,20 +213,47 @@ namespace NinetiesTV
         // 18. Return all dramas except for the highest rated.
         static List<Show> AllButBestDrama(List<Show> shows)
         {
-            throw new NotImplementedException();
+            var bestDrama = (
+                from s in shows
+                    // SO we are looking into the shows, but more precisely we want the ones with Drama
+                where s.Genres.Contains("Drama")
+                // So once we have only the ones with drama order them in descending order
+                orderby s.ImdbRating descending
+                // select those shows and collect
+                select s
+                // so now return to us all the best drama but the "bestest"
+            ).Skip(1).ToList();
+            // Return that collection
+            return bestDrama;
         }
 
         // 19. Return the number of crime shows with an IMDB rating greater than 7.0.
         static int GoodCrimeShows(List<Show> shows)
         {
-            throw new NotImplementedException();
+            // this time we want an integer not a collection of shows
+            int crimeShows = (
+                from s in shows
+                // Like joining tables you we want the intersection of crim shows and ratings of higher than 7
+                where s.Genres.Contains("Crime") && s.ImdbRating > 7
+                // collect them
+                select s
+                // count the objects in that list 
+            ).Count();
+            // tell us the number
+            return crimeShows;
         }
 
         // 20. Return the first show that ran for more than 10 years 
         //     with an IMDB rating of less than 8.0 ordered alphabetically.
         static Show FirstLongRunningTopRated(List<Show> shows)
         {
-            throw new NotImplementedException();
+            var longestRunning =
+                // method that iterate through the collection and take the difference in the span of the show
+                // while you iterate over that list find the one with an imdbrating of less than 8.
+                // where those intersect return that collection, but ordered. 
+                shows.Where(s => (s.EndYear - s.StartYear) > 10 && s.ImdbRating < 8).OrderBy(s => s.Name).ToList();
+                // although we have a list we just want the one in first first[0] index spot.
+                return longestRunning[0];
         }
 
         // 21. Return the show with the most words in the name.
